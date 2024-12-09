@@ -47,7 +47,7 @@ module ActiveDryDeps
 
     private def receiver_method_by_proc(resolver, receiver_method_alias: nil)
       unless receiver_method_alias
-        raise MissingAlias, "Alias is required while injecting with Proc"
+        raise MissingAlias, 'Alias is required while injecting with Proc'
       end
 
       @receiver_method_name = receiver_method_alias
