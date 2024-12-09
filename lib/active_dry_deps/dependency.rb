@@ -35,6 +35,10 @@ module ActiveDryDeps
       end
     end
 
+    def const_get
+      Deps::CONTAINER.resolve(@const_name) if @const_name
+    end
+
     VALID_METHOD_NAME = /^[[[:alnum:]]_]+$/
 
     private def receiver_method_by_key(resolver, receiver_method_alias: nil)

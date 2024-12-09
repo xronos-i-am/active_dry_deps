@@ -5,6 +5,8 @@ module ActiveDryDeps
 
     CONTAINER = Container.new
 
+    extend Notifications::ClassMethods
+
     module_function
 
     # include Deps[routes_admin: 'Lib::Routes.admin'] use as `routes_admin`
@@ -15,16 +17,22 @@ module ActiveDryDeps
       m = Module.new
 
       receiver_methods = +''
+      dependencies = []
 
       keys.each do |resolver|
-        receiver_methods << Dependency.new(resolver).receiver_method_string << "\n"
+        dependency = Dependency.new(resolver)
+        receiver_methods << dependency.receiver_method_string << "\n"
+        dependencies << dependency
       end
 
       aliases.each do |alias_method, resolver|
-        receiver_methods << Dependency.new(resolver, receiver_method_alias: alias_method).receiver_method_string << "\n"
+        dependency = Dependency.new(resolver, receiver_method_alias: alias_method)
+        receiver_methods << dependency.receiver_method_string << "\n"
+        dependencies << dependency
       end
 
       m.module_eval(receiver_methods)
+      m.include(Notifications.included_dependency_decorator(dependencies))
       m
     end
 

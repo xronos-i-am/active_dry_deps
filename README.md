@@ -181,6 +181,26 @@ it 'stub' do
 end
 ```
 
+### Instrumentation
+
+#### Check dependencies Rake task
+You can check the defined dependencies with Rake task. The task will fail if dependency graph contains the circular dependencies. Make sure you specified `production` environment because the task works only if `Rails.application.config.eager_load == true`
+
+```shell
+RAILS_ENV=production bundle exec rake active_dry_deps:check_cyclic_references 
+```
+
+#### Injection subscriber
+You can subscribe to inject dependency event. It occurs when RubyVM reads the file and meets `include ::Deps`. The subscriber can be used for various things. For example, to construct a dependency graph and then check for cycles
+
+```ruby
+$DEPENDENCY_MAP = {}
+ActiveDryDeps::Deps.subscribe(:dependency_injected) do |event|
+  $DEPENDENCY_MAP.register(event[:receiver], event[:dependencies].map(&:const_name))
+end
+```
+
+
 ## Configuration
 The gem is auto-configuring, but you can override settings
 
