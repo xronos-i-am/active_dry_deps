@@ -10,7 +10,7 @@ class CreateOrder
     'CreateDeparture',
     'Utils.message',
     'SupplierSync::ReserveJob.perform_later',
-    send_mail:               -> { 'email-sent' },
+    'send_mail',
     CreateDepartureCallable: 'CreateDeparture.call',
   ]
 

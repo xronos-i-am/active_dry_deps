@@ -4,8 +4,8 @@ module ActiveDryDeps
 
   module StubDeps
 
-    def stub(const_name, proxy_object, &block)
-      self::CONTAINER.stub(const_name, proxy_object, &block)
+    def stub(key, proxy_object, &block)
+      self::CONTAINER.stub(key, proxy_object, &block)
     end
 
     def unstub(*keys)
@@ -16,20 +16,34 @@ module ActiveDryDeps
 
   module StubContainer
 
-    def stub(const_name, proxy_object)
+    def self.extended(container)
+      const_set(:CONTAINER_ORIG, container.dup)
+    end
+
+    def stub(key, proxy_object)
       if block_given?
         begin
-          self[const_name] = proxy_object
+          self[key] = proxy_object
         ensure
-          delete(const_name)
+          unstub(key)
         end
       else
-        self[const_name] = proxy_object
+        self[key] = proxy_object
       end
     end
 
     def unstub(*unstub_keys)
-      (unstub_keys.empty? ? keys : unstub_keys).each { |const_name| delete(const_name) }
+      if unstub_keys.empty?
+        replace(CONTAINER_ORIG)
+      else
+        unstub_keys.each do |key|
+          if CONTAINER_ORIG.key?(key)
+            self[key] = CONTAINER_ORIG[key]
+          else
+            delete(key)
+          end
+        end
+      end
     end
 
   end

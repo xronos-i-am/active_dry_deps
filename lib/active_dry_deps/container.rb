@@ -3,12 +3,16 @@
 module ActiveDryDeps
   class Container < Hash
 
-    def resolve(const_name)
-      unless key?(const_name)
-        self[const_name] = Object.const_get(const_name)
+    def resolve(container_key)
+      unless key?(container_key)
+        self[container_key] = Object.const_get(container_key)
       end
 
-      self[const_name]
+      self[container_key]
+    end
+
+    def register(container_key, &block)
+      self[container_key.to_s] = block
     end
 
   end

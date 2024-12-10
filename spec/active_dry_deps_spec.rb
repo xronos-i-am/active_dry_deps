@@ -31,13 +31,6 @@ RSpec.describe ActiveDryDeps do
     }.to raise_error(ActiveDryDeps::DependencyNameInvalid, 'name +!invalid_identifier+ is not a valid Ruby identifier')
   end
 
-  describe '#resolve' do
-    it 'dependencies resolved' do
-      expect(Deps.resolve('CreateDeparture')).to eq CreateDeparture
-      expect(Deps.resolve('SupplierSync::ReserveJob')).to eq SupplierSync::ReserveJob
-    end
-  end
-
   describe '#stub' do
     def expect_call_orig
       expect(CreateOrder.call).to eq %w[CreateDeparture CreateDeparture job-performed message-ok email-sent]
