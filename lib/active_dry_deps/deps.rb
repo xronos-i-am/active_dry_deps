@@ -3,9 +3,8 @@
 module ActiveDryDeps
   module Deps
 
-    CONTAINER = Container.new
-
-    extend Notifications::ClassMethods
+    CONTAINER     = Container.new
+    NOTIFICATIONS = Notifications.new
 
     module_function
 
@@ -14,30 +13,25 @@ module ActiveDryDeps
     # include Deps['Lib::Routes'] use as `Routes()`
     # include Deps['OrderService::Recalculate.call'] use as `Recalculate()`
     def [](*keys, **aliases)
-      m = Module.new
-
-      receiver_methods = +''
-      dependencies = []
+      injector = DependencyInjector.new
 
       keys.each do |resolver|
-        dependency = Dependency.new(resolver)
-        receiver_methods << dependency.receiver_method_string << "\n"
-        dependencies << dependency
+        injector.dependencies << Dependency.new(resolver)
       end
 
       aliases.each do |alias_method, resolver|
-        dependency = Dependency.new(resolver, receiver_method_alias: alias_method)
-        receiver_methods << dependency.receiver_method_string << "\n"
-        dependencies << dependency
+        injector.dependencies << Dependency.new(resolver, receiver_method_alias: alias_method)
       end
 
-      m.module_eval(receiver_methods)
-      m.include(Notifications.included_dependency_decorator(dependencies))
-      m
+      injector.receiver_module
     end
 
     def register(...)
       CONTAINER.register(...)
+    end
+
+    def subscribe(event:, &block)
+      NOTIFICATIONS.subscribe(event:, &block)
     end
 
   end

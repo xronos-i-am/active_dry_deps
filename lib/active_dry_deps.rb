@@ -2,7 +2,7 @@
 
 require 'active_dry_deps/version'
 require 'active_dry_deps/configuration'
-require 'active_dry_deps/railtie'
+require 'active_dry_deps/railtie' if defined? Rails
 
 module ActiveDryDeps
 
