@@ -84,7 +84,7 @@ module ActiveDryDeps
 
     METHOD_TEMPLATES = {
       { container: true, method_call: true }   => <<~RUBY,
-        # def create_order(...)
+        # def CreateOrder(...)
         #   ::ActiveDryDeps::Deps::CONTAINER.resolve("OrderService::Create").call(...)
         # end
 
@@ -93,7 +93,7 @@ module ActiveDryDeps
         end
       RUBY
       { container: true, method_call: false }  => <<~RUBY,
-        # def create_order
+        # def CreateOrder
         #   ::ActiveDryDeps::Deps::CONTAINER.resolve("OrderService::Create")
         # end
 
@@ -102,7 +102,7 @@ module ActiveDryDeps
         end
       RUBY
       { container: false, method_call: true }  => <<~RUBY,
-        # def create_order(...)
+        # def CreateOrder(...)
         #   OrderService::Create.call(...)
         # end
 
@@ -111,7 +111,7 @@ module ActiveDryDeps
         end
       RUBY
       { container: false, method_call: false } => <<~RUBY,
-        # def create_order
+        # def CreateOrder
         #   OrderService::Create
         # end
 
