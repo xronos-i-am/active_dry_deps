@@ -23,15 +23,15 @@ module ActiveDryDeps
         injector.dependencies << Dependency.new(resolver, receiver_method_alias: alias_method)
       end
 
-      injector.receiver_module
+      injector.receiver_methods
     end
 
     def register(...)
       CONTAINER.register(...)
     end
 
-    def subscribe(event:, &block)
-      NOTIFICATIONS.subscribe(event:, &block)
+    def subscribe(...)
+      NOTIFICATIONS.subscribe(...)
     end
 
   end

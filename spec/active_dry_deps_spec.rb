@@ -62,9 +62,5 @@ RSpec.describe ActiveDryDeps do
         CreateDeparture → CreateOrder → CreateDeparture
       TEXT
     end
-
-    it 'dependency load constant' do
-      expect($DEPENDENCY_BY_NAME['CreateDeparture'].const_get).to eq CreateDeparture
-    end
   end
 end

@@ -9,21 +9,18 @@ module ActiveDryDeps
       @dependencies = []
     end
 
-    def receiver_module
-      m =
-        Module.new do
-          def self.included(receiver_module)
-            receiver_module.define_singleton_method(:included) do |receiver|
-              ActiveDryDeps::Deps::NOTIFICATIONS.emit(event: :dependency_injected, receiver: receiver.name, dependencies: dependencies)
-            end
-          end
-          def self.extended
-          end
-          def self.prepended
+    def receiver_methods
+      dependencies = @dependencies
 
-          end
+      dependency_injected =
+        proc do |receiver|
+          Deps::NOTIFICATIONS.emit(:dependency_injected, receiver: receiver, dependencies: dependencies)
         end
 
+      m = Module.new
+      m.define_singleton_method(:included, &dependency_injected)
+      m.define_singleton_method(:prepended, &dependency_injected)
+      m.define_singleton_method(:extended, &dependency_injected)
       m.module_eval(dependencies.map(&:receiver_method_string).join("\n"))
       m
     end
