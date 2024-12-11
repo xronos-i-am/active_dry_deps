@@ -11,8 +11,8 @@ module ActiveDryDeps
       self[container_key]
     end
 
-    def register(container_key, &block)
-      self[container_key.to_s] = block
+    def register(container_key)
+      self[container_key.to_s] = block_given? ? yield : value
     end
 
   end

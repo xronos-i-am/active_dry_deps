@@ -9,9 +9,9 @@ module ActiveDryDeps
 
     def initialize(resolver, receiver_method_alias: nil)
       if LOWER.match?(resolver[0])
-        receiver_method_by_key(resolver, receiver_method_alias:)
+        receiver_method_by_key(resolver, receiver_method_alias: receiver_method_alias)
       else
-        receiver_method_by_const_name(resolver, receiver_method_alias:)
+        receiver_method_by_const_name(resolver, receiver_method_alias: receiver_method_alias)
       end
     end
 
@@ -46,7 +46,6 @@ module ActiveDryDeps
 
       @receiver_method_name = receiver_method_name.to_sym
       @resolve_key = resolver
-      @method_name = :call
     end
 
     VALID_CONST_NAME  = /^[[:upper:]][[[:alnum:]]:_]*$/
@@ -84,31 +83,31 @@ module ActiveDryDeps
     end
 
     METHOD_TEMPLATES = {
-      { container: true, method_call: true } => <<~RUBY,
+      { container: true, method_call: true }   => <<~RUBY,
         # def create_order(...)
         #   ::ActiveDryDeps::Deps::CONTAINER.resolve("OrderService::Create").call(...)
         # end
 
-        def %{receiver_method_name}(...)
-          ::ActiveDryDeps::Deps::CONTAINER.resolve("%{container_key_or_const_name}").%{method_name}(...)
+        def %<receiver_method_name>s(...)
+          ::ActiveDryDeps::Deps::CONTAINER.resolve("%<container_key_or_const_name>s").%<method_name>s(...)
         end
       RUBY
-      { container: true, method_call: false } => <<~RUBY,
+      { container: true, method_call: false }  => <<~RUBY,
         # def create_order
         #   ::ActiveDryDeps::Deps::CONTAINER.resolve("OrderService::Create")
         # end
 
-        def %{receiver_method_name}
-          ::ActiveDryDeps::Deps::CONTAINER.resolve("%{container_key_or_const_name}")
+        def %<receiver_method_name>s
+          ::ActiveDryDeps::Deps::CONTAINER.resolve("%<container_key_or_const_name>s")
         end
       RUBY
-      { container: false, method_call: true } => <<~RUBY,
+      { container: false, method_call: true }  => <<~RUBY,
         # def create_order(...)
         #   OrderService::Create.call(...)
         # end
 
-        def %{receiver_method_name}(...)
-          %{container_key_or_const_name}.%{method_name}(...)
+        def %<receiver_method_name>s(...)
+          %<container_key_or_const_name>s.%<method_name>s(...)
         end
       RUBY
       { container: false, method_call: false } => <<~RUBY,
@@ -116,11 +115,11 @@ module ActiveDryDeps
         #   OrderService::Create
         # end
 
-        def %{receiver_method_name}
-          %{container_key_or_const_name}
+        def %<receiver_method_name>s
+          %<container_key_or_const_name>s
         end
       RUBY
-    }
+    }.freeze
 
   end
 end

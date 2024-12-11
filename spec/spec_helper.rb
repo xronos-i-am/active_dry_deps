@@ -8,7 +8,15 @@ Bundler.require :default
 
 Rails.application.initialize!
 
-Deps.register(:send_mail) { 'email-sent' }
+class Mailer
+
+  def call(message)
+    "email-sent-#{message}"
+  end
+
+end
+
+Deps.register(:mailer) { Mailer.new }
 
 Dir['./spec/app/**/*.rb'].each { |f| require f }
 Dir['./spec/support/*.rb'].each { |f| require f }

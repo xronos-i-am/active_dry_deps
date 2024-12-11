@@ -9,6 +9,6 @@ gem 'rake', '~> 13.0'
 gem 'rspec', '~> 3.0'
 
 gem 'activesupport'
-gem 'rails'
 gem 'combustion'
+gem 'rails'
 gem 'rubocop-gp', github: 'corp-gp/rubocop-gp', require: false

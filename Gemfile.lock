@@ -11,7 +11,7 @@ GIT
 PATH
   remote: .
   specs:
-    active_dry_deps (0.1.0)
+    active_dry_deps (1.0.0)
       dry-configurable
 
 GEM

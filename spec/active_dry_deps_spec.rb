@@ -2,7 +2,7 @@
 
 RSpec.describe ActiveDryDeps do
   it 'all dependencies works' do
-    expect(CreateOrder.call).to eq %w[CreateDeparture CreateDeparture job-performed message-ok email-sent]
+    expect(CreateOrder.call).to eq %w[CreateDeparture CreateDeparture job-performed message-ok email-sent-hello]
   end
 
   it 'stub dependencies with `deps`' do
@@ -13,7 +13,7 @@ RSpec.describe ActiveDryDeps do
       CreateDeparture:         double(call: '2'),
       ReserveJob:              '3',
       message:                 '4',
-      send_mail:               '5',
+      mailer:                  double(call: '5'),
     )
     expect(service.call).to eq %w[1 2 3 4 5]
   end
@@ -33,13 +33,13 @@ RSpec.describe ActiveDryDeps do
 
   describe '#stub' do
     def expect_call_orig
-      expect(CreateOrder.call).to eq %w[CreateDeparture CreateDeparture job-performed message-ok email-sent]
+      expect(CreateOrder.call).to eq %w[CreateDeparture CreateDeparture job-performed message-ok email-sent-hello]
     end
 
     it 'direct stub with `Deps.stub`' do
       Deps.stub('CreateDeparture', double(call: '1'))
 
-      expect(CreateOrder.call).to eq %w[1 1 job-performed message-ok email-sent]
+      expect(CreateOrder.call).to eq %w[1 1 job-performed message-ok email-sent-hello]
 
       Deps.unstub
 
@@ -48,7 +48,7 @@ RSpec.describe ActiveDryDeps do
 
     it 'direct stub with `Deps.sub` with block' do
       Deps.stub('CreateDeparture', double(call: '1')) do
-        expect(CreateOrder.call).to eq %w[1 1 job-performed message-ok email-sent]
+        expect(CreateOrder.call).to eq %w[1 1 job-performed message-ok email-sent-hello]
       end
 
       expect_call_orig
