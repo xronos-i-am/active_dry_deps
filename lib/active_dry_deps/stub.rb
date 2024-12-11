@@ -4,8 +4,8 @@ module ActiveDryDeps
 
   module StubDeps
 
-    def stub(key, proxy_object, &block)
-      self::CONTAINER.stub(key, proxy_object, &block)
+    def stub(key, proxy_object, &)
+      self::CONTAINER.stub(key, proxy_object, &)
     end
 
     def unstub(*keys)
