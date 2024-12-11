@@ -14,4 +14,4 @@ Gp/ModuleMethodInWrongFile:
     - lib/active_dry_deps/stub.rb
 
 AllCops:
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 3.0

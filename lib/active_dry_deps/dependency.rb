@@ -9,9 +9,9 @@ module ActiveDryDeps
 
     def initialize(resolver, receiver_method_alias: nil)
       if LOWER.match?(resolver[0])
-        receiver_method_by_key(resolver, receiver_method_alias:)
+        receiver_method_by_key(resolver, receiver_method_alias: receiver_method_alias)
       else
-        receiver_method_by_const_name(resolver, receiver_method_alias:)
+        receiver_method_by_const_name(resolver, receiver_method_alias: receiver_method_alias)
       end
     end
 
