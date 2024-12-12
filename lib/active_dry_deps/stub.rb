@@ -5,37 +5,11 @@ module ActiveDryDeps
   module StubDeps
 
     def stub(key, &block)
-      self::CONTAINER.stub(key, &block)
+      allow(Deps::CONTAINER).to receive(:resolve).with(key).and_wrap_original(&block)
     end
 
-    def unstub(*keys)
-      self::CONTAINER.unstub(*keys)
-    end
-
-  end
-
-  module StubContainer
-
-    def self.extended(container)
-      const_set(:CONTAINER_ORIG, container.dup)
-    end
-
-    def stub(key, &block)
-      self[key] = ActiveDryDeps::Container::Entry.new(proc: block)
-    end
-
-    def unstub(*unstub_keys)
-      if unstub_keys.empty?
-        replace(CONTAINER_ORIG)
-      else
-        unstub_keys.each do |key|
-          if CONTAINER_ORIG.key?(key)
-            self[key] = CONTAINER_ORIG[key]
-          else
-            delete(key)
-          end
-        end
-      end
+    def unstub
+      RSpec::Mocks.space.proxy_for(Deps::CONTAINER).reset
     end
 
   end
@@ -43,8 +17,13 @@ module ActiveDryDeps
   module Deps
 
     def self.enable_stubs!
-      Deps::CONTAINER.extend(StubContainer)
-      Deps.extend StubDeps
+      RSpec.configure do |config|
+        config.before(:each) do
+          allow(Deps::CONTAINER).to receive(:resolve).and_call_original
+        end
+
+        config.include StubDeps
+      end
     end
 
   end

@@ -36,25 +36,37 @@ RSpec.describe ActiveDryDeps do
       expect(CreateOrder.call).to eq %w[CreateDeparture CreateDeparture job-performed message-ok email-sent-hello]
     end
 
-    it 'stubs dependency at the container level' do
-      Deps.stub('CreateDeparture') { double(call: '1') }
+    it 'stubs dependency with container' do
+      stub('CreateDeparture') { double(call: '1') }
+      stub('SupplierSync::ReserveJob') { double(perform_later: '2') }
 
-      expect(CreateOrder.call).to eq %w[1 1 job-performed message-ok email-sent-hello]
+      expect(CreateOrder.call).to eq %w[1 1 2 message-ok email-sent-hello]
 
-      Deps.unstub
+      unstub
+
+      expect_call_orig
+    end
+
+    it 'stubs dependency with allow' do
+      allow(Deps::CONTAINER).to receive(:resolve).with('CreateDeparture').and_return(double(call: '1'))
+      allow(Deps::CONTAINER).to receive(:resolve).with('SupplierSync::ReserveJob').and_return(double(perform_later: '2'))
+
+      expect(CreateOrder.call).to eq %w[1 1 2 message-ok email-sent-hello]
+
+      unstub
 
       expect_call_orig
     end
 
     it 'raises exception when calls a stub block' do
       expect {
-        Deps.stub('CreateDeparture') { raise StandardError, 'Something went wrong' }
+        stub('CreateDeparture') { raise StandardError, 'Something went wrong' }
       }.not_to raise_error
 
       expect { CreateOrder.call }
         .to raise_error(StandardError, 'Something went wrong')
 
-      Deps.unstub
+      unstub
 
       expect_call_orig
     end
